@@ -8,10 +8,10 @@ function Character (name, hp, ap, cap) {
 	this.attack = function (target) {
 		target.healthPoints -= this.attackPower;
 		this.attackPower += this.startAttackPower;
-		if (!target.checkDead()) {
-			this.healthPoints -= target.counterAttackPower;
-			this.checkDead();
-		}
+	};
+	this.counter = function (attacker) {
+		attacker.healthPoints -= this.counterAttackPower;
+		attacker.checkDead();
 	};
 	this.checkDead = function () {
 		if (this.healthPoints <= 0){
@@ -35,53 +35,63 @@ let go = {
 	fighters : {},
 	playerFighter : "",
 	currentTarget : "",
-	state : 0,
+	state : "selectPlayer",
 	attackCycle : function () {
-		if (this.state === 2) {
-			let plyr = this.fighters[this.playerFighter];
-			let target = this.fighters[this.currentTarget];
-			plyr.attack(target);
-			console.log(plyr.name + " attacks " + target.name + " for " + plyr.attackPower + "!");
-			if (target.dead) {
-				$("#"+target.name).remove();
-				this.state = 1;
+		if (this.state === "attack") {
+			let player = this.fighters[this.playerFighter];
+			let defender = this.fighters[this.currentTarget];
+			console.log(player.name + " attacks " + defender.name + " for " + player.attackPower + "!");
+			player.attack(defender);	
+			console.log(defender.name + " HP: " + defender.healthPoints);
+			defender.checkDead();
+			if (defender.dead) {
+				console.log(defender.name + " is defeated! Choose another character to attack.");
+				$("#"+defender.name).remove();
+				this.state = "selectDefender";
+			} else {
+				defender.counter(player);
+				console.log(defender.name + " counter attacks for " + defender.counterAttackPower + "!");
+				console.log(player.name +" HP: " + player.healthPoints);
+				player.checkDead();
+				if (player.dead) {
+					console.log("You lost.")
+					this.state = "Lose";
+				}
 			}
-		} else {
+		} else if (this.state === "selectPlayer" || this.state === "selectDefender") {
 			console.log("Need to select attacker and defender before attacking!")
 		}
 	}
 }
 
-// var Fighter1 = new Character("Fighter1", 50, 5, 5);
-// var Fighter2 = new Character("Fighter2", 100, 2, 10);
-// var Fighter3 = new Character("Fighter3", 80, 3, 4);
-// var Fighter4 = new Character("Fighter4", 70, 4, 7);
-
-let fighters = [["Fighter1", 50, 5, 5], 
-				["Fighter2", 100, 2, 10], 
-				["Fighter3", 80, 3, 4], 
-				["Fighter4", 70, 4, 7]];
+//2d array for fighter construction
+let fightersList = [["Arnav", 50, 5, 3], 
+				["Chris", 100, 2, 10], 
+				["Tats", 80, 3, 8], 
+				["Ryan", 70, 4, 7]];
 
 
 function selectFighter (fighter) {
-	if (go.state === 0 || go.state === 1){
+	if (go.state === "selectPlayer" || go.state === "selectDefender"){
 		function moveFighter () {
 			console.log("selecting player...", fighter)
 			let elem = $("#"+fighter);
 			$("#battleZone").append(elem);
 		}
-		if (go.state === 0) {
+		if (go.state === "selectPlayer") {
 			go.playerFighter = fighter;
-			go.state = 1;
+			go.state = "selectDefender";
 			moveFighter();
-		} else if (go.state === 1) {
+		} else if (go.state === "selectDefender") {
 			go.currentTarget = fighter;
-			go.state = 2;
+			go.state = "attack";
 			moveFighter();
 		}		
 	}
 }
 
+//attack button that triggers an entire game loop
 $("#attack").click(function() {go.attackCycle();});
 
-makeFighters(fighters);
+//construct our fighters into 
+makeFighters(fightersList);
