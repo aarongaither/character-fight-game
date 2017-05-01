@@ -11,7 +11,6 @@ function Character (name, hp, ap, cap) {
 	};
 	this.counter = function (attacker) {
 		attacker.healthPoints -= this.counterAttackPower;
-		attacker.checkDead();
 	};
 	this.checkDead = function () {
 		if (this.healthPoints <= 0){
@@ -40,18 +39,24 @@ let go = {
 		if (this.state === "attack") {
 			let player = this.fighters[this.playerFighter];
 			let defender = this.fighters[this.currentTarget];
-			console.log(player.name + " attacks " + defender.name + " for " + player.attackPower + "!");
+			console.log(`${player.name} attacks ${defender.name} for ${player.attackPower}!`);
 			player.attack(defender);	
-			console.log(defender.name + " HP: " + defender.healthPoints);
+			console.log(`${defender.name} HP: ${defender.healthPoints}`);
 			defender.checkDead();
 			if (defender.dead) {
-				console.log(defender.name + " is defeated! Choose another character to attack.");
-				$("#"+defender.name).remove();
-				this.state = "selectDefender";
+				if (this.checkForWin()){
+					$("#"+defender.name).remove();
+					console.log("You've won!");
+					this.state = "win";
+				} else {				
+					console.log(`${defender.name} is defeated! Choose another character to attack.`);
+					$("#"+defender.name).remove();
+					this.state = "selectDefender";
+				}
 			} else {
 				defender.counter(player);
-				console.log(defender.name + " counter attacks for " + defender.counterAttackPower + "!");
-				console.log(player.name +" HP: " + player.healthPoints);
+				console.log(`${defender.name} counter attacks for ${defender.counterAttackPower}!`);
+				console.log(`${player.name} HP: ${player.healthPoints}`);
 				player.checkDead();
 				if (player.dead) {
 					console.log("You lost.")
@@ -61,14 +66,26 @@ let go = {
 		} else if (this.state === "selectPlayer" || this.state === "selectDefender") {
 			console.log("Need to select attacker and defender before attacking!")
 		}
+	},
+	checkForWin : function () {
+		for (let fighter in this.fighters) {
+			let thisFighter = this.fighters[fighter];
+			if (thisFighter.name != this.playerFighter && !thisFighter.dead) {
+				console.log("Someone is still alive...")
+				return false;
+			} else if (thisFighter.name != this.playerFighter) {
+				console.log(`${thisFighter.name} is dead...`)
+			}
+		}
+		return true;
 	}
 }
 
 //2d array for fighter construction
-let fightersList = [["Arnav", 50, 5, 3], 
+let fightersList = [["Arnav", 70, 5, 7], 
 				["Chris", 100, 2, 10], 
-				["Tats", 80, 3, 8], 
-				["Ryan", 70, 4, 7]];
+				["Corey", 90, 3, 9], 
+				["Ryan", 80, 4, 8]];
 
 
 function selectFighter (fighter) {
@@ -83,9 +100,13 @@ function selectFighter (fighter) {
 			go.state = "selectDefender";
 			moveFighter();
 		} else if (go.state === "selectDefender") {
-			go.currentTarget = fighter;
-			go.state = "attack";
-			moveFighter();
+			if (fighter != go.playerFighter){
+				go.currentTarget = fighter;
+				go.state = "attack";
+				moveFighter();
+			} else {
+				console.log("You can't battle yourself...")
+			}
 		}		
 	}
 }
