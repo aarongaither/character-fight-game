@@ -25,7 +25,7 @@ function makeFighters (list) {
 		elem = $("<div>").addClass("fighter").attr("id", item[0]);
 		hpElem = $("<div>").addClass("hp").text(item[1]);
 		nameElem = $("<div>").addClass("name").text(item[0]);
-		imgElem = $("<img>").attr('src',"assets/images/"+go.portraits[item[0]]);
+		imgElem = $("<img>").attr('src',"assets/images/"+go.portraits[item[0]].toLowerCase());
 		elem.append(nameElem);
 		elem.append(imgElem);
 		elem.append(hpElem);
