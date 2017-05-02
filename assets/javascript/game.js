@@ -22,9 +22,13 @@ function Character (name, hp, ap, cap) {
 function makeFighters (list) {
 	//add our li elemts to rep our fighters, add onclick event for selection
 	for (let item of list) {
-		elem = $("<div>").addClass("fighter").attr("id", item[0]).text(item[0]);
-		subElem = $("<div>").text(item[1]);
-		elem.append(subElem);
+		elem = $("<div>").addClass("fighter").attr("id", item[0]);
+		hpElem = $("<div>").addClass("hp").text(item[1]);
+		nameElem = $("<div>").addClass("name").text(item[0]);
+		imgElem = $("<img>").attr('src',"assets/images/"+go.portraits[item[0]]);
+		elem.append(nameElem);
+		elem.append(imgElem);
+		elem.append(hpElem);
 		elem.click(function () {selectFighter(this.id);});
 		$("#fighterSelect").append(elem);
 		go.fighters[item[0]] = new Character(item[0], item[1], item[2], item[3])
@@ -37,6 +41,12 @@ let go = {
 	playerFighter : "",
 	currentTarget : "",
 	state : "selectPlayer",
+	portraits : {
+		"Ryan" : "Ryan.jpg",
+		"Chris" : "Chris.jpg",
+		"Arnav" : "Arnav.jpg",
+		"Corey" : "Corey.png"
+	},
 	attackCycle : function () {
 		if (this.state === "attack") {
 			let player = this.fighters[this.playerFighter];
@@ -82,7 +92,7 @@ let go = {
 		$("#log").prepend(msg+'<br>');
 	},
 	updateHP : function (char) {
-		$("#"+char.name).children("div").text(char.healthPoints);
+		$("#"+char.name).children("div.hp").text(char.healthPoints);
 	}
 }
 
@@ -95,19 +105,20 @@ let fightersList = [["Arnav", 90, 5, 7],
 
 function selectFighter (fighter) {
 	if (go.state === "selectPlayer" || go.state === "selectDefender"){
-		function moveFighter () {
-			go.log(fighter + " selected.")
+		function moveFighter (type) {
+			go.log(fighter + " selected as " + type + ".")
 			$("#"+fighter).appendTo("#battleZone");
+			$("#"+fighter).addClass(type);
 		}
 		if (go.state === "selectPlayer") {
 			go.playerFighter = fighter;
 			go.state = "selectDefender";
-			moveFighter();
+			moveFighter("player");
 		} else if (go.state === "selectDefender") {
 			if (fighter != go.playerFighter){
 				go.currentTarget = fighter;
 				go.state = "attack";
-				moveFighter();
+				moveFighter("target");
 			} else {
 				go.log("You can't battle yourself...")
 			}
