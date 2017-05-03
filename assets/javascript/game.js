@@ -5,19 +5,23 @@ function Character(name, hp, ap, cap) {
     this.attackPower = ap;
     this.counterAttackPower = cap;
     this.dead = false;
-    this.attack = function(target) {
+}
+
+Character.prototype = {
+    attack: function(target) {
         target.healthPoints -= this.attackPower;
         this.attackPower += this.startAttackPower;
-    };
-    this.counter = function(attacker) {
-        attacker.healthPoints -= this.counterAttackPower;
-    };
-    this.checkDead = function() {
+    },
+    counter: function(target) {
+        target.healthPoints -= this.attackPower;
+        this.attackPower += this.startAttackPower;
+    },
+    checkDead: function() {
         if (this.healthPoints <= 0) {
             this.dead = true;
         }
-    };
-}
+    }
+};
 
 function makeFighters(list) {
     //add our li elemts to rep our fighters, add onclick event for selection
