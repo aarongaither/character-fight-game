@@ -1,3 +1,4 @@
+//constructor for our fighter 
 function Character(name, hp, ap, cap) {
     this.name = name;
     this.healthPoints = hp;
@@ -7,6 +8,7 @@ function Character(name, hp, ap, cap) {
     this.dead = false;
 }
 
+//add common functions to constructor prototype for each new object to reference
 Character.prototype = {
     attack: function(target) {
         target.healthPoints -= this.attackPower;
@@ -22,35 +24,28 @@ Character.prototype = {
     }
 };
 
-function makeFighters(list) {
-    //add our li elemts to rep our fighters, add onclick event for selection
-    for (let item of list) {
-        elem = $("<div>").addClass("fighter").attr("id", item[0]);
-        hpElem = $("<div>").addClass("hp").text(item[1]);
-        nameElem = $("<div>").addClass("name").text(item[0]);
-        imgElem = $("<img>").attr('src', "assets/images/" + go.portraits[item[0]].toLowerCase());
-        elem.append(nameElem);
-        elem.append(imgElem);
-        elem.append(hpElem);
-        elem.click(function() { selectFighter(this.id); });
-        $("#fighterSelect").append(elem);
-        go.fighters[item[0]] = new Character(item[0], item[1], item[2], item[3])
-    }
-}
-
+//game Object, holds errythang
 let go = {
-    //game Object, holds errythang
+    //2d array for fighter construction
+    fightersList: [
+        ["Arnav", 90, 5, 7],
+        ["Chris", 150, 2, 10],
+        ["Corey", 130, 3, 9],
+        ["Ryan", 110, 4, 8]
+    ],
     fighters: {},
     playerFighter: "",
     currentTarget: "",
+    //game state manager
     state: "selectPlayer",
+    //images for our fighter divs
     portraits: {
         "Ryan": "Ryan.jpg",
         "Chris": "Chris.jpg",
         "Arnav": "Arnav.jpg",
         "Corey": "Corey.png"
     },
-    attackCycle: function() {
+    mainLoop: function() {
         if (this.state === "attack") {
             let player = this.fighters[this.playerFighter];
             let defender = this.fighters[this.currentTarget];
@@ -82,6 +77,12 @@ let go = {
             this.log("Need to select attacker and defender before attacking!")
         }
     },
+    reset: function() {
+        this.fighters = {};
+        this.playerFighter = "";
+        this.currentTarget = "";
+        this.state = "selectPlayer"
+    },
     checkForWin: function() {
         let win = true;
         $.each(this.fighters, function(fighter, thisFighter) {
@@ -96,17 +97,23 @@ let go = {
     },
     updateHP: function(char) {
         $("#" + char.name).children("div.hp").text(char.healthPoints);
+    },
+    makeFighters: function() {
+        //add our li elemts to rep our fighters, add onclick event for selection
+        for (let item of this.fightersList) {
+            elem = $("<div>").addClass("fighter").attr("id", item[0]);
+            hpElem = $("<div>").addClass("hp").text(item[1]);
+            nameElem = $("<div>").addClass("name").text(item[0]);
+            imgElem = $("<img>").attr('src', "assets/images/" + this.portraits[item[0]].toLowerCase());
+            elem.append(nameElem);
+            elem.append(imgElem);
+            elem.append(hpElem);
+            elem.click(function() { selectFighter(this.id); });
+            $("#fighterSelect").append(elem);
+            this.fighters[item[0]] = new Character(item[0], item[1], item[2], item[3])
+        }
     }
 }
-
-//2d array for fighter construction
-let fightersList = [
-    ["Arnav", 90, 5, 7],
-    ["Chris", 150, 2, 10],
-    ["Corey", 130, 3, 9],
-    ["Ryan", 110, 4, 8]
-];
-
 
 function selectFighter(fighter) {
     if (go.state === "selectPlayer" || go.state === "selectDefender") {
@@ -132,9 +139,14 @@ function selectFighter(fighter) {
 }
 
 //attack button that triggers an entire game loop
-$("#attack").click(function() { go.attackCycle(); });
+$("#attack").click(function() { go.mainLoop(); });
+$("#reset").click(function() { go.reset(); })
 
-//construct our fighters into 
-makeFighters(fightersList);
 
+//start the game here
+//construct our fighters into elements and objects
+//each element has a click listener that will trigger all game events
+go.makeFighters();
+
+//set our initial text box
 $("#log").text("Select a character to play as.");
