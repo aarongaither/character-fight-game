@@ -81,7 +81,10 @@ let go = {
         this.fighters = {};
         this.playerFighter = "";
         this.currentTarget = "";
-        this.state = "selectPlayer"
+        this.state = "selectPlayer";
+        $(".fighter").remove();
+        this.makeFighters();
+        $("#log").text("Select a character to play as.");
     },
     checkForWin: function() {
         let win = true;
