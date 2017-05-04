@@ -29,8 +29,8 @@ let go = {
     //2d array for fighter construction
     fightersList: [
         ["Arnav", 90, 5, 7],
-        ["Chris", 150, 2, 10],
-        ["Corey", 130, 3, 9],
+        ["Derek", 150, 2, 10],
+        ["Jeff", 130, 3, 9],
         ["Ryan", 110, 4, 8]
     ],
     fighters: {},
@@ -41,9 +41,9 @@ let go = {
     //images for our fighter divs
     portraits: {
         "Ryan": "Ryan.jpg",
-        "Chris": "Chris.jpg",
+        "Derek": "Derek.jpg",
         "Arnav": "Arnav.jpg",
-        "Corey": "Corey.png"
+        "Jeff": "Jeff.jpg"
     },
     mainLoop: function() {
         if (this.state === "attack") {
