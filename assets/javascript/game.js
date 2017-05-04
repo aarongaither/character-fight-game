@@ -13,8 +13,7 @@ Character.prototype = {
         this.attackPower += this.startAttackPower;
     },
     counter: function(target) {
-        target.healthPoints -= this.attackPower;
-        this.attackPower += this.startAttackPower;
+        target.healthPoints -= this.counterAttackPower;
     },
     checkDead: function() {
         if (this.healthPoints <= 0) {
@@ -103,9 +102,9 @@ let go = {
 //2d array for fighter construction
 let fightersList = [
     ["Arnav", 90, 5, 7],
-    ["Chris", 140, 2, 10],
-    ["Corey", 120, 3, 9],
-    ["Ryan", 100, 4, 8]
+    ["Chris", 150, 2, 10],
+    ["Corey", 130, 3, 9],
+    ["Ryan", 110, 4, 8]
 ];
 
 
