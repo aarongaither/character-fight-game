@@ -44,10 +44,15 @@ header {
     font-family: 'Share Tech Mono', monospace;
     border: 1px solid black;
     transition: border 0.4s ease-out;
+    overflow: hidden;
 }
 
 .fighters div:hover {
     border: 3px solid rgba(51, 136, 171, 1.0);
+}
+
+div.fighter {
+	border-radius: 50%;
 }
 
 .fighters div>div.hp,
@@ -106,6 +111,7 @@ button {
     background-color: rgba(51, 136, 171, 1.0);
     box-shadow: 0 35px 50px -25px rgba(255, 255, 255, .5) inset;
     transition: box-shadow .8s ease-out;
+    border-radius: 10%;
 }
 
 button:hover {
@@ -115,6 +121,7 @@ button:hover {
 img {
     width: 100%;
     display: block;
+    /*border-radius: 50%;*/
 }
 
 @media screen and (max-width: 800px) {
