@@ -94,6 +94,10 @@ div.fighter {
     transform: scale(.1, .1) rotate(360deg);
 }
 
+.hit {
+    animation: jiggle .2s ease 0s 2;
+}
+
 #log {
     float: right;
     width: 50%;
@@ -129,6 +133,19 @@ button:hover {
 img {
     width: 100%;
     display: block;
+}
+
+@keyframes jiggle {
+    0% {
+        transform: scale(1,1);
+    }
+    50% {
+    	opacity: 0.5;
+        transform: scale(.8,.8);
+    }
+    100% {
+        transform: scale(1,1);
+    }
 }
 
 @media screen and (max-width: 800px) {

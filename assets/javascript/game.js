@@ -48,6 +48,8 @@ let go = {
     mainLoop: function() {
         //check state, if not attack, send a msg to alert player
         if (this.state === "attack") {
+            //temporarily block all interactions by switching to an unused state
+            this.state = "transition";
             //alias vars
             let player = this.fighters[this.playerFighter];
             let defender = this.fighters[this.currentTarget];
@@ -59,25 +61,34 @@ let go = {
             //if defender is dead, check if player has won, and update msg and state accordingly
             defender.checkDead();
             if (defender.dead) {
-                if (this.checkForWin()) {
-                    $("#" + defender.name).remove();
-                    this.log("You've won!");
-                    this.state = "win";
-                } else {
-                    this.log(`${defender.name} is defeated! Choose another character to attack.`);
-                    $("#" + defender.name).remove();
-                    this.state = "selectDefender";
-                }
+                let defenderElem = $("#" + defender.name);
+                defenderElem.addClass("hide");
+                setTimeout(function() {
+                    if (go.checkForWin()) {
+                        defenderElem.remove();
+                        go.log("You've won!");
+                        go.state = "win";
+                    } else {
+                        go.log(`${defender.name} is defeated! Choose another character to attack.`);
+                        defenderElem.remove();
+                        go.state = "selectDefender";
+                    }
+                },1000)
             } else {
                 //since defender survived, counter attack then check if player is dead (lost)
-                defender.counter(player);
-                this.log(`${defender.name} counter attacks for ${defender.counterAttackPower}!`);
-                this.updateHP(player);
-                player.checkDead();
-                if (player.dead) {
-                    this.log("You lost.");
-                    this.state = "Lose";
-                }
+                setTimeout(function() {
+                    defender.counter(player);
+                    go.log(`${defender.name} counter attacks for ${defender.counterAttackPower}!`);
+                    go.updateHP(player);
+                    player.checkDead();
+                    if (player.dead) {
+                        go.log("You lost.");
+                        go.state = "Lose";
+                        $("#" + player.name).addClass("hide");
+                    } else {
+                        go.state = "attack";
+                    }
+                }, 1000);
             }
         } else if (this.state === "selectPlayer" || this.state === "selectDefender") {
             this.log("Need to select attacker and defender before attacking!")
@@ -107,9 +118,14 @@ let go = {
     log: function(msg) {
         $("#log").prepend(msg + '<br>');
     },
-    //method to update hp display on character portraits
+    //method to update hp display on character portraits, and jiggle with css animation
     updateHP: function(char) {
-        $("#" + char.name).children("div.hp").text(char.healthPoints);
+        let character = $("#" + char.name);
+        character.addClass("hit");
+        character.children("div.hp").text(char.healthPoints);
+        setTimeout(function() {
+            character.removeClass("hit");
+        }, 500);
     },
     //method to create character elements, then charater objects
     makeFighters: function() {
