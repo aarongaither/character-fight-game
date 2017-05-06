@@ -43,7 +43,8 @@ header {
     margin: 2% 3%;
     font-family: 'Share Tech Mono', monospace;
     border: 1px solid black;
-    transition: border 0.4s ease-out;
+    opacity: 1;
+    transition: border 0.4s ease-out, opacity 0.6s ease-out, transform 1s ease-out;
     overflow: hidden;
 }
 
@@ -52,7 +53,7 @@ header {
 }
 
 div.fighter {
-	border-radius: 50%;
+    border-radius: 50%;
 }
 
 .fighters div>div.hp,
@@ -80,10 +81,17 @@ div.fighter {
 
 .fighters div.player {
     border: 3px solid chartreuse;
+    left: 25%;
 }
 
 .fighters div.target {
     border: 3px solid crimson;
+    left: 25%;
+}
+
+.fighters div.hide {
+    opacity: 0;
+    transform: scale(.1, .1) rotate(360deg);
 }
 
 #log {
@@ -121,7 +129,6 @@ button:hover {
 img {
     width: 100%;
     display: block;
-    /*border-radius: 50%;*/
 }
 
 @media screen and (max-width: 800px) {

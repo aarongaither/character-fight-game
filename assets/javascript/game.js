@@ -28,10 +28,10 @@ Character.prototype = {
 let go = {
     //2d array for fighter construction
     fightersList: [
-        ["Arnav", 90, 5, 7],
-        ["Derek", 150, 2, 10],
-        ["Jeff", 130, 3, 9],
-        ["Ryan", 110, 4, 8]
+        ["Arnav", 90, 8, 8],
+        ["Derek", 150, 2, 15],
+        ["Jeff", 130, 4, 12],
+        ["Ryan", 110, 6, 10]
     ],
     fighters: {},
     playerFighter: "",
@@ -46,12 +46,17 @@ let go = {
         "Jeff": "Jeff.jpg"
     },
     mainLoop: function() {
+        //check state, if not attack, send a msg to alert player
         if (this.state === "attack") {
+            //alias vars
             let player = this.fighters[this.playerFighter];
             let defender = this.fighters[this.currentTarget];
+            //log attack and run method
             this.log(`${player.name} attacks ${defender.name} for ${player.attackPower}!`);
             player.attack(defender);
             this.updateHP(defender);
+            //update defender dead property, then check against it
+            //if defender is dead, check if player has won, and update msg and state accordingly
             defender.checkDead();
             if (defender.dead) {
                 if (this.checkForWin()) {
@@ -64,6 +69,7 @@ let go = {
                     this.state = "selectDefender";
                 }
             } else {
+                //since defender survived, counter attack then check if player is dead (lost)
                 defender.counter(player);
                 this.log(`${defender.name} counter attacks for ${defender.counterAttackPower}!`);
                 this.updateHP(player);
@@ -77,6 +83,7 @@ let go = {
             this.log("Need to select attacker and defender before attacking!")
         }
     },
+    //method to reset all game stats and states
     reset: function() {
         this.fighters = {};
         this.playerFighter = "";
@@ -86,6 +93,7 @@ let go = {
         this.makeFighters();
         $("#log").text("Select a character to play as.");
     },
+    //method to check if player has won, checks each other fighter obj for dead
     checkForWin: function() {
         let win = true;
         $.each(this.fighters, function(fighter, thisFighter) {
@@ -95,14 +103,17 @@ let go = {
         });
         return win;
     },
+    //method to update our scroll log
     log: function(msg) {
         $("#log").prepend(msg + '<br>');
     },
+    //method to update hp display on character portraits
     updateHP: function(char) {
         $("#" + char.name).children("div.hp").text(char.healthPoints);
     },
+    //method to create character elements, then charater objects
     makeFighters: function() {
-        //add our li elemts to rep our fighters, add onclick event for selection
+        //add our li elemts to rep our fighters, add onclick event for selection, elements aliased for readability
         for (let item of this.fightersList) {
             elem = $("<div>").addClass("fighter").attr("id", item[0]);
             hpElem = $("<div>").addClass("hp").text(item[1]);
@@ -113,27 +124,47 @@ let go = {
             elem.append(hpElem);
             elem.click(function() { selectFighter(this.id); });
             $("#fighterSelect").append(elem);
+            //character objects here
             this.fighters[item[0]] = new Character(item[0], item[1], item[2], item[3])
         }
     }
 }
 
 function selectFighter(fighter) {
+    //onclick function for selecting player and/or defender
+    //check state, if player or defender select then move clicked elem
     if (go.state === "selectPlayer" || go.state === "selectDefender") {
         function moveFighter(type) {
+            fighterElem = $("#" + fighter);
             go.log(fighter + " selected as " + type + ".")
-            $("#" + fighter).appendTo("#battleZone");
-            $("#" + fighter).addClass(type);
+            fighterElem.addClass("hide");
+            setTimeout(function() {
+                fighterElem.appendTo("#battleZone");
+                fighterElem.addClass(type);
+                setTimeout(function() {
+                    fighterElem.removeClass("hide");
+                }, 500);
+            }, 1000);
         }
         if (go.state === "selectPlayer") {
+            //temporarily block all interactions by switching to an unused state
+            go.state = "transition";
             go.playerFighter = fighter;
-            go.state = "selectDefender";
             moveFighter("player");
+            //delay new state change till after assignments are done
+            setTimeout(function() {
+                go.state = "selectDefender";
+            }, 2200);
         } else if (go.state === "selectDefender") {
             if (fighter != go.playerFighter) {
+                //temporarily block all interactions by switching to an unused state
+                go.state = "transition";
                 go.currentTarget = fighter;
-                go.state = "attack";
                 moveFighter("target");
+                //delay new state change till after assignments are done
+                setTimeout(function() {
+                    go.state = "attack";
+                }, 2200);
             } else {
                 go.log("You can't battle yourself...")
             }
