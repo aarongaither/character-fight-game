@@ -168,4 +168,9 @@ img {
     button, #log {
     	height: 50px;
     }
+
+    .fighters div>div.hp, 
+    .fighters div>div.name {
+    	font-size: 1.0rem;
+    }
 }
