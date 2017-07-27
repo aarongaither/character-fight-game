@@ -6,7 +6,7 @@ This app is a simple interactive browser game highlighting jquery's ability to d
 
 ### Code
 
-The only library used in this app is jQuery. All styling, animations, and logic utilize no helper tools, libraries, or frameworks.
+The only library used in this app is jQuery. All styling, animations, and logic utilize no helper tools, libraries, or frameworks. Some ES6 features were used in the game logic, so the app may not be functional on certain browsers (cough, IE, cough).
 
 ### Gameplay
 
